@@ -80,4 +80,25 @@ Future<void> bootstrapApp() async {
     log('Could not load bootstrap flag (will re-run bootstrap)',
         error: e, name: 'Bootstrap');
   }
+
+  // Tamil-first defaults: lock country to IN and language to Tamil (ta)
+  // so charts, home sections, and search all default to Tamil content.
+  // These are only written once — existing user preferences are preserved.
+  try {
+    final settingsDao = SettingsDAO(DBProvider.db);
+    final existingCountry =
+        await settingsDao.getSettingStr(SettingKeys.countryCode);
+    if (existingCountry == null || existingCountry.isEmpty) {
+      await settingsDao.putSettingStr(SettingKeys.countryCode, 'IN');
+      log('Default country set to IN (Tamil/India)', name: 'Bootstrap');
+    }
+    final existingLang =
+        await settingsDao.getSettingStr(SettingKeys.languageCode);
+    if (existingLang == null || existingLang.isEmpty) {
+      await settingsDao.putSettingStr(SettingKeys.languageCode, 'ta');
+      log('Default language set to ta (Tamil)', name: 'Bootstrap');
+    }
+  } catch (e) {
+    log('Tamil defaults skipped', error: e, name: 'Bootstrap');
+  }
 }

@@ -91,9 +91,11 @@ class StreamQualitySelector {
       Quality.low,
       Quality.lossless,
     ],
+    // FIX Bug-4: high preference should prefer Quality.high first, not lossless.
+    // Lossless is a bonus if available, not the primary target for "High" setting.
     AudioStreamQualityPreference.high: [
-      Quality.lossless,
       Quality.high,
+      Quality.lossless,
       Quality.medium,
       Quality.low,
     ],
@@ -113,9 +115,10 @@ class StreamQualitySelector {
       Quality.low,
       Quality.lossless,
     ],
+    // FIX Bug-4: same fix for download order.
     AudioStreamQualityPreference.high: [
-      Quality.lossless,
       Quality.high,
+      Quality.lossless,
       Quality.medium,
       Quality.low,
     ],

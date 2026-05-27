@@ -9,6 +9,11 @@ import 'package:http/http.dart' as http;
 
 class CountryInfoService {
   static const String defaultCountryCode = 'IN';
+
+  // Tamil Nadu / India is the primary locale for this deployment.
+  // Setting country to IN ensures plugins surface Tamil/Indian charts
+  // and recommendations by default.
+  static const String preferredMusicRegion = 'IN';
   static bool _countryCodesInitialized = false;
 
   static final List<Uri> _countryLookupUris = [

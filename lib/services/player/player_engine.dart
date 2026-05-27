@@ -169,11 +169,16 @@ class PlayerEngine {
   void _configureNativePlayer(Player player) {
     if (player.platform is NativePlayer) {
       final native = player.platform as NativePlayer;
+      // Faster reconnect: reduced delay_max from 5s to 2s for quicker recovery.
       native.setProperty('stream-lavf-o',
-          'reconnect=1,reconnect_streamed=1,reconnect_delay_max=5');
+          'reconnect=1,reconnect_streamed=1,reconnect_delay_max=2');
       native.setProperty('cache', 'yes');
-      native.setProperty('demuxer-max-bytes', '134217728'); // 128 MB
-      native.setProperty('network-timeout', '15');
+      // Increased demuxer buffer to 256 MB for smoother high-quality streams.
+      native.setProperty('demuxer-max-bytes', '268435456'); // 256 MB
+      // Reduced network timeout from 15s to 8s so errors surface faster.
+      native.setProperty('network-timeout', '8');
+      // Start playback as soon as 2s of audio is buffered instead of waiting.
+      native.setProperty('demuxer-readahead-secs', '2');
     }
   }
 
@@ -383,9 +388,11 @@ class PlayerEngine {
         } catch (e) {
           log('Socket dropped while idle on standby. Executing fallback re-open.',
               name: 'PlayerEngine');
+          // FIX Bug-5: pass autoPlay to the fallback open so session-restore
+          // (autoPlay=false) does not accidentally start playback.
           await newPlayer.open(
               Media(nextUri.toString(), httpHeaders: nextHeaders),
-              play: true);
+              play: autoPlay);
         }
       }
 
