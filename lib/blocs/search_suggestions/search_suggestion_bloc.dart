@@ -59,7 +59,7 @@ class SearchSuggestionBloc
           isPluginLoading: false,
         ));
       },
-      transformer: _debounceRestartable(const Duration(milliseconds: 250)),
+      transformer: _debounceRestartable(const Duration(milliseconds: 120)),
     );
 
     on<SearchSuggestionSave>((event, emit) async {
@@ -125,7 +125,7 @@ class SearchSuggestionBloc
       final response = await _pluginService.execute(
         pluginId: pluginId,
         request: request,
-      ).timeout(const Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 3));
 
       if (response is PluginResponse_Suggestions) {
         final queries = <String>[];

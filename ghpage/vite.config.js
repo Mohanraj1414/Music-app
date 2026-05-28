@@ -7,7 +7,11 @@ const dev = process.env.NODE_ENV === 'development';
 export default defineConfig({
 	plugins: [tailwindcss(), sveltekit()],
 	base: dev ? '/' : '/BloomeeTunes/',
+	server: {
+		host: '0.0.0.0',
+		port: 5174,
+	},
 	build: {
-		outDir: 'build', // Ensure this matches your output directory
+		outDir: 'build',
 	},
 });

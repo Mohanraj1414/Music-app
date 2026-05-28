@@ -374,7 +374,10 @@ class BloomeeMusicPlayer extends BaseAudioHandler
       log('Engine error: $error', name: 'BloomeeMusicPlayer');
       final track = _queueManager.currentTrack;
       if (track != null) {
-        _errorHandler.handleError(PlayerErrorType.playbackError, error, track);
+        // FIX Bug-2: use categorizeError so engine-level 403/EOF/timeout
+        // errors get the correct type instead of always being playbackError.
+        _errorHandler.handleError(
+            _errorHandler.categorizeError(error), error, track);
       }
     });
 
@@ -616,8 +619,16 @@ class BloomeeMusicPlayer extends BaseAudioHandler
         await engine.stop(keepLoadingState: true);
         if (!alive()) return;
 
+        // FIX Bug-1: raised timeout to 30s and show user feedback while resolving.
+        SnackbarService.showMessage(
+          'Loading "${track.title}"...',
+          duration: const Duration(seconds: 30),
+        );
+        // FIX Bug-6: register attempt before opening so the error-dedup
+        // sequence gate is correctly scoped to this play attempt.
+        _errorHandler.registerAttempt(track.id);
         _currentResolveOp = CancelableOperation.fromFuture(
-          _resolveWithFallback(track).timeout(const Duration(seconds: 15)),
+          _resolveWithFallback(track).timeout(const Duration(seconds: 30)),
         );
         final resolved = await _currentResolveOp!.valueOrCancellation();
         if (resolved == null || !alive()) return;

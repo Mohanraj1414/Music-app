@@ -104,12 +104,16 @@ class RelatedSongsManager {
     _isExhausted = false;
   }
 
+  // FIX Bug-3: also reset _isExhausted when the same track is re-encountered
+  // after looping, so radio pages can be fetched again.
   void _syncReferenceState({
     required String trackId,
     required String pluginId,
     required String localId,
   }) {
     if (_referenceTrackId == trackId && _pluginId == pluginId) {
+      // Same track — only reset exhaustion so looping can re-fetch radio pages.
+      _isExhausted = false;
       return;
     }
 
