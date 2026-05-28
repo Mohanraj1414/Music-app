@@ -13,7 +13,7 @@ import 'package:Bloomee/screens/screen/plugin_manager_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Bloomee/core/theme/app_theme.dart';
 import 'package:Bloomee/l10n/app_localizations.dart';
-import 'package:icons_plus/icons_plus.dart' hide IconData;
+import 'package:icons_plus/icons_plus.dart';
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
