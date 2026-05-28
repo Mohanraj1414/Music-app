@@ -13,7 +13,7 @@ import 'package:Bloomee/screens/screen/plugin_manager_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:Bloomee/core/theme/app_theme.dart';
 import 'package:Bloomee/l10n/app_localizations.dart';
-import 'package:icons_plus/icons_plus.dart';
+import 'package:icons_plus/icons_plus.dart' hide IconData;
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
@@ -141,7 +141,7 @@ class SettingsView extends StatelessWidget {
                     title: AppLocalizations.of(context)!.settingsLastFM,
                     subtitle:
                         AppLocalizations.of(context)!.settingsLastFMSubtitle,
-                    icon: FontAwesome.lastfm_brand,
+                    icon: MingCute.music_2_fill, // Use MingCute instead of FontAwesome.lastfm_brand
                     iconColor: Default_Theme.accentColor2,
                     onTap: () => _navigate(context, const LastDotFM()),
                   ),
