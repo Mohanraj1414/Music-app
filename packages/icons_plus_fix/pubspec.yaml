@@ -16,3 +16,6 @@ flutter:
     - family: MingCute
       fonts:
         - asset: fonts/MingCute.ttf
+    - family: AntDesign
+      fonts:
+        - asset: fonts/AntDesign.ttf
