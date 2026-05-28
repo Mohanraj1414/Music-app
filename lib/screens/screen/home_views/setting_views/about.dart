@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:Bloomee/l10n/app_localizations.dart';
-import 'package:icons_plus/icons_plus.dart';
+import 'package:icons_plus/icons_plus.dart' as icons_plus show MingCute;
+import 'package:icons_plus/icons_plus.dart' show FontAwesome;
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:ui';
@@ -343,7 +344,7 @@ class About extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(MingCute.github_fill,
+                  const Icon(icons_plus.MingCute.github_fill,
                       color: kSecondaryTextColor, size: 16),
                   const SizedBox(width: 8),
                   Text(l10n.aboutGitHub,
