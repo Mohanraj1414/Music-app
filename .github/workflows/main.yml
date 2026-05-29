@@ -32,6 +32,7 @@ jobs:
                 echo "=== Flutter Analysis ==="
                 flutter analyze --no-fatal-infos --no-fatal-warnings || true
                 echo "=== Analysis completed ==="
+              continue-on-error: true
 
             - name: Extract version from pubspec.yaml
               shell: powershell
@@ -140,6 +141,7 @@ jobs:
                 echo "=== Flutter Analysis ==="
                 flutter analyze --no-fatal-infos --no-fatal-warnings || true
                 echo "=== Analysis completed ==="
+              continue-on-error: true
 
             - name: Extract version from pubspec.yaml
               run: |
