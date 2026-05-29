@@ -29,10 +29,17 @@ workflows:
           export PATH="$HOME/.cargo/bin:$PATH"
           flutter pub get
 
+      - name: Clean Gradle Cache
+        script: |
+          cd android
+          ./gradlew clean
+          cd ..
+
       - name: Build Android APK
         script: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          flutter build apk --release --split-per-abi
+          export _JAVA_OPTIONS="-Xmx16G -XX:MaxMetaspaceSize=8G"
+          flutter build apk --release --split-per-abi -v
 
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
@@ -69,7 +76,8 @@ workflows:
       - name: Build iOS
         script: |
           export PATH="$HOME/.cargo/bin:$PATH"
-          flutter build ios --release --no-codesign
+          export _JAVA_OPTIONS="-Xmx16G -XX:MaxMetaspaceSize=8G"
+          flutter build ios --release --no-codesign -v
 
     artifacts:
       - build/ios/ipa/*.ipa
