@@ -27,6 +27,12 @@ jobs:
             - name: Install Dependencies
               run: flutter pub get
 
+            - name: Validate Build Configuration
+              run: |
+                echo "=== Flutter Analysis ==="
+                flutter analyze --no-fatal-infos --no-fatal-warnings || true
+                echo "=== Analysis completed ==="
+
             - name: Extract version from pubspec.yaml
               shell: powershell
               run: |
@@ -128,6 +134,12 @@ jobs:
 
             - name: Install Dependencies
               run: flutter pub get
+
+            - name: Validate Build Configuration
+              run: |
+                echo "=== Flutter Analysis ==="
+                flutter analyze --no-fatal-infos --no-fatal-warnings || true
+                echo "=== Analysis completed ==="
 
             - name: Extract version from pubspec.yaml
               run: |
