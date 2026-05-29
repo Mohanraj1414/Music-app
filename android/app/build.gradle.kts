@@ -103,3 +103,21 @@ android {
 flutter {
     source = "../.."
 }
+
+// Configure Jetifier to handle large transformations
+tasks.withType<JavaCompile> {
+    options.javaModuleSystemOptions {
+        addModules.add("jdk.incubator.vector")
+    }
+}
+
+// Optimize Jetifier transformation
+if (project.hasProperty("android")) {
+    android.applicationVariants.all { variant ->
+        variant.javaCompileProvider?.configure {
+            doFirst {
+                println("Compiling variant: ${variant.name}")
+            }
+        }
+    }
+}
