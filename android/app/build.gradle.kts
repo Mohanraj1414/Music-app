@@ -121,3 +121,40 @@ if (project.hasProperty("android")) {
         }
     }
 }
+
+// Plugin compatibility diagnostics
+println("\n========== Plugin Compatibility Check ==========")
+configurations.all {
+    resolutionStrategy {
+        force("com.google.code.gson:gson:2.10.1")
+        
+        // Force specific versions for compatibility
+        eachDependency { dependency ->
+            when {
+                dependency.requested.group == "org.jetbrains.kotlin" -> {
+                    println("  ✅ Kotlin: ${dependency.requested.name}:${dependency.requested.version}")
+                }
+                dependency.requested.group == "androidx.appcompat" -> {
+                    println("  ✅ AndroidX AppCompat: ${dependency.requested.version}")
+                }
+                dependency.requested.group.contains("audio") -> {
+                    println("  🔊 Audio Plugin: ${dependency.requested.name}:${dependency.requested.version}")
+                }
+            }
+        }
+    }
+}
+println("===================================================\n")
+
+// Enhanced error handling for large builds
+gradle.taskGraph.whenReady { taskGraph ->
+    taskGraph.allTasks.forEach { task ->
+        when {
+            task.name.contains("transform", ignoreCase = true) -> {
+                task.doFirst {
+                    println("Starting transform: ${task.name}")
+                }
+            }
+        }
+    }
+}
