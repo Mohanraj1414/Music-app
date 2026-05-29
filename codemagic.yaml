@@ -6,13 +6,16 @@ workflows:
     environment:
       java: 17
       flutter: 3.35.4
+      PATH: $PATH:$HOME/.cargo/bin
+      CARGO_HOME: $HOME/.cargo
     scripts:
       - name: Install Rust
         script: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          source "$HOME/.cargo/env"
-          rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android
+          export PATH="$HOME/.cargo/bin:$PATH"
+          rustup target add aarch64-linux-android armv7-linux-androideabi x86_64-linux-android i686-linux-android
           echo "Rust version: $(rustc --version)"
+          echo "Cargo version: $(cargo --version)"
 
       - name: Setup keystore
         script: |
@@ -23,12 +26,12 @@ workflows:
 
       - name: Flutter pub get
         script: |
-          source "$HOME/.cargo/env"
+          export PATH="$HOME/.cargo/bin:$PATH"
           flutter pub get
 
       - name: Build Android APK
         script: |
-          source "$HOME/.cargo/env"
+          export PATH="$HOME/.cargo/bin:$PATH"
           flutter build apk --release --split-per-abi
 
     artifacts:
@@ -42,27 +45,30 @@ workflows:
       flutter: 3.35.4
       xcode: latest
       cocoapods: default
+      PATH: $PATH:$HOME/.cargo/bin
+      CARGO_HOME: $HOME/.cargo
     scripts:
       - name: Install Rust
         script: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-          source "$HOME/.cargo/env"
+          export PATH="$HOME/.cargo/bin:$PATH"
           rustup target add aarch64-apple-ios x86_64-apple-ios aarch64-apple-ios-sim
           echo "Rust version: $(rustc --version)"
+          echo "Cargo version: $(cargo --version)"
 
       - name: Flutter pub get
         script: |
-          source "$HOME/.cargo/env"
+          export PATH="$HOME/.cargo/bin:$PATH"
           flutter pub get
 
       - name: Install CocoaPods
         script: |
-          source "$HOME/.cargo/env"
+          export PATH="$HOME/.cargo/bin:$PATH"
           find . -name "Podfile" -execdir pod install \;
 
       - name: Build iOS
         script: |
-          source "$HOME/.cargo/env"
+          export PATH="$HOME/.cargo/bin:$PATH"
           flutter build ios --release --no-codesign
 
     artifacts:
