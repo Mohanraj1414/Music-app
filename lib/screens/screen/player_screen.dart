@@ -71,7 +71,7 @@ class _AudioPlayerViewState extends State<AudioPlayerView>
     final isMobile = ResponsiveBreakpoints.of(context).smallerOrEqualTo(TABLET);
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 12, 4, 9),
+      backgroundColor: const Color(0xFF081323),
       resizeToAvoidBottomInset: false,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -840,7 +840,7 @@ class _AmbientImgShadowWidgetState extends State<AmbientImgShadowWidget> {
         decoration: BoxDecoration(
           gradient: RadialGradient(
             colors: [
-              (_cachedColor ?? const Color.fromARGB(255, 163, 44, 115))
+              (_cachedColor ?? const Color(0xFF178B93))
                   .withValues(alpha: 0.35),
               Colors.transparent,
             ],
