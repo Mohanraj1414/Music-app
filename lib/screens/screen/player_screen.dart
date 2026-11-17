@@ -10,6 +10,7 @@ import 'package:Bloomee/screens/widgets/gradient_progress_bar.dart';
 import 'package:Bloomee/screens/widgets/more_bottom_sheet.dart';
 import 'package:Bloomee/screens/widgets/up_next_panel.dart';
 import 'package:Bloomee/screens/widgets/volume_slider.dart';
+import 'package:Bloomee/screens/widgets/recommendation_mode_selector.dart';
 import 'package:Bloomee/screens/widgets/media_metadata_links.dart';
 import 'package:Bloomee/screens/screen/player_views/segments_sheet.dart';
 import 'package:Bloomee/services/bloomee_player.dart';
@@ -300,7 +301,9 @@ class PlayerCtrlWidgets extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         const _SongInfoRow(),
-        const SizedBox(height: 15),
+        const SizedBox(height: 10),
+        RecommendationModeSelector(player: musicPlayer),
+        const SizedBox(height: 14),
         const _PlayerProgressBar(),
         const SizedBox(height: 25),
         ConstrainedBox(
