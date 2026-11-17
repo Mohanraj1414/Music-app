@@ -38,12 +38,23 @@ class LanguageDiscoverySection extends StatelessWidget {
       background: Color(0xFF57412F),
       icon: Icons.graphic_eq_rounded,
     ),
+    _MusicLanguage(
+      id: 'hindi',
+      title: 'Hindi',
+      nativeName: 'हिन्दी',
+      subtitle: 'Bollywood • Trending',
+      query: 'Hindi songs',
+      accent: Color(0xFFC3A3FF),
+      background: Color(0xFF44345E),
+      icon: Icons.album_rounded,
+    ),
   ];
 
   static const _quickSearches = [
     _QuickSearch(label: 'Tamil melodies', query: 'Tamil melody songs'),
     _QuickSearch(label: 'English pop', query: 'English pop songs'),
     _QuickSearch(label: 'Kannada classics', query: 'Kannada classic songs'),
+    _QuickSearch(label: 'Hindi hits', query: 'Hindi hit songs'),
   ];
 
   static void _openSearch(BuildContext context, String query) {
@@ -84,7 +95,7 @@ class LanguageDiscoverySection extends StatelessWidget {
           ),
           const SizedBox(height: 5),
           Text(
-            'Discover Tamil, English and Kannada music.',
+            'Discover Tamil, English, Kannada and Hindi music.',
             style: TextStyle(
               fontFamily: 'Gilroy',
               fontSize: 13,
@@ -94,7 +105,7 @@ class LanguageDiscoverySection extends StatelessWidget {
           const SizedBox(height: 18),
           LayoutBuilder(
             builder: (context, constraints) {
-              if (constraints.maxWidth >= 760) {
+              if (constraints.maxWidth >= 950) {
                 return Row(
                   children: [
                     for (var i = 0; i < _languages.length; i++) ...[
