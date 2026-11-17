@@ -17,6 +17,7 @@ import 'package:Bloomee/screens/screen/home_views/recents_view.dart';
 import 'package:Bloomee/screens/screen/home_views/setting_views/about.dart';
 import 'package:Bloomee/screens/widgets/more_bottom_sheet.dart';
 import 'package:Bloomee/screens/widgets/language_discovery_section.dart';
+import 'package:Bloomee/screens/widgets/music_plugin_hub_card.dart';
 import 'package:Bloomee/screens/widgets/sign_board_widget.dart';
 import 'package:Bloomee/screens/widgets/song_tile.dart';
 import 'package:flutter/material.dart';
@@ -183,6 +184,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     [
                       const CaraouselWidget(),
                       const LanguageDiscoverySection(),
+                      const MusicPluginHubCard(),
                       Padding(
                         padding: const EdgeInsets.only(top: 15.0),
                         child: SizedBox(
