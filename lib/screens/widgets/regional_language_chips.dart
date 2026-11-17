@@ -1,7 +1,7 @@
 import 'package:Bloomee/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
-/// Quick, source-neutral searches for the three featured music languages.
+/// Quick, source-neutral searches for the four featured music languages.
 ///
 /// These chips query the active user-installed content plugin. They do not
 /// claim the catalogue is bundled, licensed, or available in every country.
@@ -25,6 +25,11 @@ class RegionalLanguageChips extends StatelessWidget {
       label: 'ಕನ್ನಡ  Kannada',
       search: 'Kannada songs',
       color: Color(0xFFFFD59D),
+    ),
+    (
+      label: 'हिन्दी  Hindi',
+      search: 'Hindi songs',
+      color: Color(0xFFC3A3FF),
     ),
   ];
 
