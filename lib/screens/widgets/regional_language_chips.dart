@@ -14,22 +14,22 @@ class RegionalLanguageChips extends StatelessWidget {
     (
       label: 'தமிழ்  Tamil',
       search: 'Tamil songs',
-      color: Color(0xFFFF8F91),
+      color: Color(0xFF36E0BE),
     ),
     (
       label: 'English',
       search: 'English songs',
-      color: Color(0xFF89D7F5),
+      color: Color(0xFF8AC3FF),
     ),
     (
       label: 'ಕನ್ನಡ  Kannada',
       search: 'Kannada songs',
-      color: Color(0xFFFFD59D),
+      color: Color(0xFFFFD782),
     ),
     (
       label: 'हिन्दी  Hindi',
       search: 'Hindi songs',
-      color: Color(0xFFC3A3FF),
+      color: Color(0xFFB7B8FF),
     ),
   ];
 
@@ -60,7 +60,7 @@ class RegionalLanguageChips extends StatelessWidget {
                   key: ValueKey('search-' + language.search),
                   label: Text(language.label),
                   tooltip: 'Search ' + language.search,
-                  backgroundColor: const Color(0xFF201A24),
+                  backgroundColor: const Color(0xFF14263A),
                   side: BorderSide(
                     color: language.color.withValues(alpha: 0.45),
                   ),
