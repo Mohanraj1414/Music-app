@@ -14,8 +14,8 @@ class LanguageDiscoverySection extends StatelessWidget {
       nativeName: 'தமிழ்',
       subtitle: 'Kollywood • Melodies',
       query: 'Tamil songs',
-      accent: Color(0xFFFF8F91),
-      background: Color(0xFF512B42),
+      accent: Color(0xFF36E0BE),
+      background: Color(0xFF12474A),
       icon: Icons.music_note_rounded,
     ),
     _MusicLanguage(
@@ -24,8 +24,8 @@ class LanguageDiscoverySection extends StatelessWidget {
       nativeName: 'English',
       subtitle: 'Pop • Indie • Classics',
       query: 'English songs',
-      accent: Color(0xFF89D7F5),
-      background: Color(0xFF1D4259),
+      accent: Color(0xFF8AC3FF),
+      background: Color(0xFF19375B),
       icon: Icons.headphones_rounded,
     ),
     _MusicLanguage(
@@ -34,8 +34,8 @@ class LanguageDiscoverySection extends StatelessWidget {
       nativeName: 'ಕನ್ನಡ',
       subtitle: 'Sandalwood • Hits',
       query: 'Kannada songs',
-      accent: Color(0xFFFFD59D),
-      background: Color(0xFF57412F),
+      accent: Color(0xFFFFD782),
+      background: Color(0xFF464057),
       icon: Icons.graphic_eq_rounded,
     ),
     _MusicLanguage(
@@ -44,8 +44,8 @@ class LanguageDiscoverySection extends StatelessWidget {
       nativeName: 'हिन्दी',
       subtitle: 'Bollywood • Trending',
       query: 'Hindi songs',
-      accent: Color(0xFFC3A3FF),
-      background: Color(0xFF44345E),
+      accent: Color(0xFFB7B8FF),
+      background: Color(0xFF323D62),
       icon: Icons.album_rounded,
     ),
   ];
@@ -169,7 +169,7 @@ class LanguageDiscoverySection extends StatelessWidget {
                     size: 18,
                     color: AppTheme.primaryColor1,
                   ),
-                  backgroundColor: const Color(0xFF201A24),
+                  backgroundColor: const Color(0xFF14263A),
                   side: BorderSide(
                     color: AppTheme.primaryColor2.withValues(alpha: 0.12),
                   ),
@@ -235,7 +235,7 @@ class _LanguageCard extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [language.background, const Color(0xFF1B1520)],
+            colors: [language.background, const Color(0xFF0B1D2C)],
           ),
         ),
         child: InkWell(
