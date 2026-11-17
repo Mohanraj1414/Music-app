@@ -32,7 +32,7 @@ void main() {
       );
       addTearDown(router.dispose);
 
-      await tester.binding.setSurfaceSize(const Size(420, 900));
+      await tester.binding.setSurfaceSize(const Size(1220, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(MaterialApp.router(routerConfig: router));
       await tester.pumpAndSettle();
