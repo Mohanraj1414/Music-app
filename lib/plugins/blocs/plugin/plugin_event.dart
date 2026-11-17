@@ -49,6 +49,12 @@ class AutoLoadPlugins extends PluginEvent {
   const AutoLoadPlugins({required this.plugins});
 }
 
+/// Enable all compatible *installed* plugins, respecting plugin load failures.
+/// No new third-party provider is downloaded by this command.
+class EnableAllInstalledPlugins extends PluginEvent {
+  const EnableAllInstalledPlugins();
+}
+
 /// Load a plugin from a [PluginInfo] object.
 class LoadPluginFromInfo extends PluginEvent {
   final PluginInfo pluginInfo;
