@@ -157,30 +157,38 @@ class RelatedSongsManager {
     _fetching = true;
     try {
       final config = settings.value;
-      // Search is necessary for selected mood/language, because a generic
-      // radio endpoint cannot guarantee either property.
+      // A mood/language can only be approximated by the provider's search;
+      // raw radio recommendations do not contain verified mood labels.
       final specific = config.mood != ListeningMood.any ||
           config.language != RadioLanguage.automatic;
       final searchFirst = specific ||
           config.mode == RadioMode.discover ||
           (config.mode == RadioMode.balanced && _searchRotation.isEven);
-      if (searchFirst) {
-        await _fetchSearch(currentMedia, generation);
-      }
-      if (!specific && _buffer.length < 4) {
+      List<Track> select() => chooseFreshTracks(
+            candidates: _buffer,
+            queue: queue,
+            recentKeys: _recentKeys.toSet(),
+            limit: 7,
+          );
+
+      if (searchFirst) await _fetchSearch(currentMedia, generation);
+      if (!specific && select().length < 4) {
         await _fetchRadio(generation);
       }
-      if (_buffer.length < 4 && !searchFirst) {
+      if (select().length < 3) {
+        await _fetchSearch(currentMedia, generation);
+      }
+      // Providers sometimes return a full page of tracks the user has
+      // already heard. Continue paging rather than treating that page as
+      // enough merely because it contained several results.
+      if (!specific && select().length < 2 && !_radioExhausted) {
+        await _fetchRadio(generation);
+      }
+      if (select().isEmpty) {
         await _fetchSearch(currentMedia, generation);
       }
       if (generation != _lookupGeneration) return;
-
-      final selected = chooseFreshTracks(
-        candidates: _buffer,
-        queue: queue,
-        recentKeys: _recentKeys.toSet(),
-        limit: 7,
-      );
+      final selected = select();
       if (selected.isEmpty) {
         // Exhausted or repetitive results should not cause the same 10 songs
         // to be re-appended over and over.
@@ -301,7 +309,9 @@ class RelatedSongsManager {
         log('Search suggestion failed for $query: $error',
             name: 'RelatedSongsManager');
       }
-      if (_buffer.length >= 7) return;
+      // Track counts alone are misleading when a provider repeats its
+      // first results. Leave room for another query when this page is stale.
+      if (_buffer.length >= 20) return;
     }
   }
 
