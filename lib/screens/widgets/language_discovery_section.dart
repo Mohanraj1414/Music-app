@@ -124,21 +124,22 @@ class LanguageDiscoverySection extends StatelessWidget {
 
               return SizedBox(
                 height: 158,
-                child: ListView.separated(
+                child: ListView(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
-                  itemCount: _languages.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
-                  itemBuilder: (context, index) {
-                    final language = _languages[index];
-                    return SizedBox(
-                      width: 224,
-                      child: _LanguageCard(
-                        language: language,
-                        onTap: () => _openSearch(context, language.query),
+                  children: [
+                    for (var i = 0; i < _languages.length; i++) ...[
+                      if (i > 0) const SizedBox(width: 12),
+                      SizedBox(
+                        width: 224,
+                        child: _LanguageCard(
+                          language: _languages[i],
+                          onTap: () =>
+                              _openSearch(context, _languages[i].query),
+                        ),
                       ),
-                    );
-                  },
+                    ],
+                  ],
                 ),
               );
             },
