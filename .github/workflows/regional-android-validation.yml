@@ -5,6 +5,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Avoid duplicate long-running Rust/Android builds for superseded commits.
+concurrency:
+  group: regional-android-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -30,6 +35,10 @@ jobs:
             lib/screens/screen/search_screen.dart \
             lib/services/bloomee_player.dart \
             lib/services/player/related_songs_manager.dart \
+            lib/plugins/blocs/plugin/plugin_bloc.dart \
+            lib/plugins/blocs/plugin/plugin_event.dart \
+            lib/screens/screen/plugin_manager_screen.dart \
+            lib/screens/widgets/music_plugin_hub_card.dart \
             test/language_discovery_section_test.dart \
             test/regional_language_chips_test.dart
       - name: Run language navigation tests
