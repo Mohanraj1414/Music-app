@@ -25,6 +25,7 @@ import 'package:Bloomee/screens/widgets/more_bottom_sheet.dart';
 import 'package:Bloomee/screens/widgets/playlist_card.dart';
 import 'package:Bloomee/screens/widgets/sign_board_widget.dart';
 import 'package:Bloomee/screens/widgets/song_tile.dart';
+import 'package:Bloomee/screens/widgets/regional_language_chips.dart';
 import 'package:Bloomee/src/rust/api/plugin/commands.dart';
 import 'package:Bloomee/src/rust/api/plugin/plugin_info.dart';
 import 'package:Bloomee/src/rust/api/plugin/models.dart' as plugin_models;
@@ -278,6 +279,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                 .read<SearchSuggestionBloc>()
                                 .add(SearchSuggestionFetch(val));
                           },
+                        ),
+                        SliverToBoxAdapter(
+                          child: RegionalLanguageChips(
+                            onSelected: _doSearchInAllCategories,
+                          ),
                         ),
                         _AestheticFilterChipsSliver(
                           filterNotifier: _filterNotifier,
