@@ -102,6 +102,39 @@ class _PluginManagerScreenState extends State<PluginManagerScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      FilledButton.icon(
+                        key: const ValueKey('enable-all-installed-plugins'),
+                        onPressed: state.hasActiveOperations
+                            ? null
+                            : () => context.read<PluginBloc>().add(
+                                  const EnableAllInstalledPlugins(),
+                                ),
+                        icon: const Icon(Icons.auto_awesome_rounded),
+                        label: const Text('Enable all installed plugins'),
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Default_Theme.accentColor2,
+                          foregroundColor: Default_Theme.themeColor,
+                          minimumSize: const Size.fromHeight(42),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Only compatible plugins already on this device. '
+                        'Use the Store tab to find more providers.',
+                        style: TextStyle(
+                          color: Default_Theme.primaryColor2
+                              .withValues(alpha: 0.65),
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 _buildChipsHeader(l10n),
                 Expanded(
                   child: ValueListenableBuilder<PluginType?>(

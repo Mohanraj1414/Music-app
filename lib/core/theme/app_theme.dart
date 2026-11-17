@@ -18,13 +18,13 @@ class AppTheme {
       TextStyle(fontFamily: "FontAwesome-Solids");
 
   // ── Colors ──────────────────────────────────────────────────────────────────
-  static const themeColor = Color(0xFF0A040C);
-  static const primaryColor1 = Color(0xFFDAEAF7);
-  static const primaryColor2 = Color.fromARGB(255, 242, 231, 240);
-  static const accentColor1 = Color(0xFF0EA5E0);
-  static const accentColor1light = Color(0xFF18C9ED);
-  static const accentColor2 = Color(0xFFFE385E);
-  static const successColor = Color(0xFF5EFF43);
+  static const themeColor = Color(0xFF081323);
+  static const primaryColor1 = Color(0xFFF3F9FF);
+  static const primaryColor2 = Color(0xFFBFD5E7);
+  static const accentColor1 = Color(0xFF649FFF);
+  static const accentColor1light = Color(0xFF98C6FF);
+  static const accentColor2 = Color(0xFF36E0BE);
+  static const successColor = Color(0xFF85EAB8);
 
   // ── Theme Data ───────────────────────────────────────────────────────────────
   ThemeData get defaultThemeData {
@@ -32,7 +32,7 @@ class AppTheme {
       primary: accentColor2,
       secondary: accentColor1,
       surface: themeColor,
-      surfaceContainerHighest: Color(0xFF1A111B),
+      surfaceContainerHighest: Color(0xFF15273B),
       onPrimary: primaryColor1,
       onSecondary: primaryColor1,
       onSurface: primaryColor1,
@@ -96,21 +96,21 @@ class AppTheme {
                 : primaryColor2.withValues(alpha: 0.0)),
       ),
       searchBarTheme: const SearchBarThemeData(
-        backgroundColor: WidgetStatePropertyAll(themeColor),
+        backgroundColor: WidgetStatePropertyAll(Color(0xFF12253A)),
       ),
       popupMenuTheme: const PopupMenuThemeData(
-        color: Color.fromARGB(255, 23, 18, 25),
+        color: Color(0xFF15273B),
         textStyle: TextStyle(color: primaryColor1),
       ),
       dropdownMenuTheme: const DropdownMenuThemeData(
         menuStyle: MenuStyle(
-          backgroundColor: WidgetStatePropertyAll(themeColor),
+          backgroundColor: WidgetStatePropertyAll(Color(0xFF12253A)),
         ),
         textStyle: TextStyle(color: primaryColor1),
       ),
       menuTheme: const MenuThemeData(
         style: MenuStyle(
-          backgroundColor: WidgetStatePropertyAll(themeColor),
+          backgroundColor: WidgetStatePropertyAll(Color(0xFF12253A)),
         ),
       ),
       cardTheme: const CardThemeData(

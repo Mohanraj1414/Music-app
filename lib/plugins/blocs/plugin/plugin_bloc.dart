@@ -8,6 +8,7 @@ import 'package:Bloomee/services/db/db_provider.dart';
 import 'package:Bloomee/plugins/blocs/plugin/plugin_event.dart';
 import 'package:Bloomee/plugins/blocs/plugin/plugin_state.dart';
 import 'package:Bloomee/plugins/errors/plugin_exceptions.dart';
+import 'package:Bloomee/plugins/utils/plugin_constants.dart';
 import 'package:Bloomee/services/plugin/plugin_event_bus.dart';
 import 'package:Bloomee/services/plugin/plugin_load_state_service.dart';
 import 'package:Bloomee/services/plugin/plugin_service.dart';
@@ -94,6 +95,7 @@ class PluginBloc extends Bloc<PluginEvent, PluginState> {
     on<RefreshPlugins>(_onRefreshPlugins);
     on<PluginSystemEvent>(_onSystemEvent);
     on<AutoLoadPlugins>(_onAutoLoadPlugins);
+    on<EnableAllInstalledPlugins>(_onEnableAllInstalledPlugins);
 
     // Subscribe to Rust plugin events.
     _eventSubscription = _eventBus.events.listen((event) {
@@ -410,6 +412,64 @@ class PluginBloc extends Bloc<PluginEvent, PluginState> {
         _autoLoadAttemptIds.remove(plugin.pluginId);
       }
     }
+  }
+
+  /// Sequentially enable compatible plugins that are already installed.
+  /// Loading is bound to a timeout and failures are reported without aborting
+  /// the remaining plugins. This action never downloads unreviewed extensions.
+  Future<void> _onEnableAllInstalledPlugins(
+    EnableAllInstalledPlugins event,
+    Emitter<PluginState> emit,
+  ) async {
+    if (!state.isInitialized || state.hasActiveOperations) return;
+
+    final candidates = state.availablePlugins.where((info) {
+      return info.manifest.manifestVersion == CURRENT_MANIFEST_VERSION &&
+          !state.loadedPluginIds.contains(info.manifest.id);
+    }).toList(growable: false);
+
+    if (candidates.isEmpty) {
+      emit(state.copyWith(
+        successMessage: 'All compatible installed plugins are enabled.',
+        clearError: true,
+      ));
+      return;
+    }
+
+    emit(state.copyWith(
+      isLoading: true,
+      clearError: true,
+      clearSuccessMessage: true,
+    ));
+
+    final activated = <String>{};
+    final failed = <String>[];
+    for (final info in candidates) {
+      final pluginId = info.manifest.id;
+      try {
+        await _pluginService.loadPlugin(
+          pluginId: pluginId,
+          pluginType: info.pluginType,
+        ).timeout(const Duration(seconds: 20));
+        activated.add(pluginId);
+      } catch (e) {
+        failed.add(info.manifest.name);
+        log('Could not enable music plugin $pluginId: $e',
+            name: 'PluginBloc');
+      }
+    }
+
+    if (activated.isNotEmpty) {
+      await _persistAutoLoadSafe({..._preferredAutoLoadIds, ...activated});
+    }
+    emit(state.copyWith(
+      isLoading: false,
+      clearError: failed.isEmpty,
+      error: failed.isEmpty
+          ? null
+          : 'Unavailable or incompatible plugins: ${failed.take(3).join(', ')}',
+      successMessage: 'Enabled ${activated.length} of ${candidates.length} installed plugins.',
+    ));
   }
 
   // ── System Events (from Rust) ──────────────────────────────────────────────

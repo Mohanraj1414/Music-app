@@ -25,6 +25,7 @@ import 'package:Bloomee/screens/widgets/more_bottom_sheet.dart';
 import 'package:Bloomee/screens/widgets/playlist_card.dart';
 import 'package:Bloomee/screens/widgets/sign_board_widget.dart';
 import 'package:Bloomee/screens/widgets/song_tile.dart';
+import 'package:Bloomee/screens/widgets/regional_language_chips.dart';
 import 'package:Bloomee/src/rust/api/plugin/commands.dart';
 import 'package:Bloomee/src/rust/api/plugin/plugin_info.dart';
 import 'package:Bloomee/src/rust/api/plugin/models.dart' as plugin_models;
@@ -88,7 +89,23 @@ class _SearchScreenState extends State<SearchScreen> {
 
     if (widget.searchQuery.isNotEmpty) {
       _textEditingController.text = widget.searchQuery;
-      _doSearch(widget.searchQuery);
+      if (_activePluginIdNotifier.value != null) {
+        _doSearch(widget.searchQuery);
+      }
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SearchScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The shell keeps this tab alive; language cards can push a new query
+    // without recreating SearchScreen.
+    if (oldWidget.searchQuery != widget.searchQuery &&
+        widget.searchQuery.trim().isNotEmpty) {
+      _setSearchFieldText(widget.searchQuery);
+      if (_activePluginIdNotifier.value != null) {
+        _doSearch(widget.searchQuery);
+      }
     }
   }
 
@@ -210,6 +227,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
         _activePluginIdNotifier.value = activeId;
         _contentBloc.add(SetActiveContentPlugin(pluginId: activeId));
+        // An incoming language search may have been selected before the
+        // asynchronous plugin bootstrap finished.
+        final pendingQuery = _textEditingController.text.trim();
+        if (pendingQuery.isNotEmpty) {
+          _doSearch(pendingQuery);
+        }
       },
       child: GestureDetector(
         onTap: () {
@@ -256,6 +279,11 @@ class _SearchScreenState extends State<SearchScreen> {
                                 .read<SearchSuggestionBloc>()
                                 .add(SearchSuggestionFetch(val));
                           },
+                        ),
+                        SliverToBoxAdapter(
+                          child: RegionalLanguageChips(
+                            onSelected: _doSearchInAllCategories,
+                          ),
                         ),
                         _AestheticFilterChipsSliver(
                           filterNotifier: _filterNotifier,

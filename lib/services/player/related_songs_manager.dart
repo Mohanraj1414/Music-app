@@ -21,6 +21,7 @@ class RelatedSongsManager {
   String? _nextPageToken;
   bool _isFetching = false;
   bool _isExhausted = false;
+  int _lookupGeneration = 0;
 
   // Callbacks
   Function(List<Track> items, {bool atLast})? onAddQueueItems;
@@ -94,6 +95,7 @@ class RelatedSongsManager {
   }
 
   void clearRelatedSongs() {
+    ++_lookupGeneration;
     relatedSongs.add([]);
     _fetchedTrackIds.clear();
     _referenceTrackId = null;
@@ -112,11 +114,11 @@ class RelatedSongsManager {
     required String localId,
   }) {
     if (_referenceTrackId == trackId && _pluginId == pluginId) {
-      // Same track — only reset exhaustion so looping can re-fetch radio pages.
-      _isExhausted = false;
+      // Do not refetch an exhausted page every 15 seconds while listening.
       return;
     }
 
+    ++_lookupGeneration;
     relatedSongs.add([]);
     _fetchedTrackIds.clear();
     _referenceTrackId = trackId;
@@ -136,6 +138,7 @@ class RelatedSongsManager {
     }
 
     _isFetching = true;
+    final generation = _lookupGeneration;
     try {
       final response = await _pluginService.execute(
         pluginId: _pluginId!,
@@ -149,6 +152,9 @@ class RelatedSongsManager {
 
       response.when(
         moreTracks: (pagedTracks) {
+          // A previous track's slow radio response must never poison the new
+          // track's queue after a skip or playlist replacement.
+          if (generation != _lookupGeneration) return;
           final uniqueTracks = pagedTracks.items.where((track) {
             return _fetchedTrackIds.add(track.id);
           }).toList(growable: false);
@@ -189,7 +195,7 @@ class RelatedSongsManager {
     } catch (e) {
       log('Failed to get related songs: $e', name: 'RelatedSongsManager');
     } finally {
-      _isFetching = false;
+      if (generation == _lookupGeneration) _isFetching = false;
     }
   }
 

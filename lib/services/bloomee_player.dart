@@ -334,7 +334,12 @@ class BloomeeMusicPlayer extends BaseAudioHandler
     };
 
     _relatedSongsManager.onAddQueueItems =
-        (items, {bool atLast = false}) => addQueueTracks(items, atLast: atLast);
+        (items, {bool atLast = false}) {
+      addQueueTracks(items, atLast: atLast);
+      // Related tracks are added *after* the current song started. Prepare
+      // the newly available next track immediately for smoother transitions.
+      _preResolveNextTrack();
+    };
 
     _recentlyPlayedTracker = RecentlyPlayedTracker(
       engine,
@@ -757,6 +762,9 @@ class BloomeeMusicPlayer extends BaseAudioHandler
     _isAdvancing = true;
     Future.microtask(() async {
       try {
+        // A radio recommendation can arrive near the exact song boundary.
+        // Wait briefly instead of discarding the pending next song.
+        await _waitForNextQueueTrack();
         final advanced = _queueManager.advanceToNext(loopMode: loopMode.value);
         if (advanced) {
           final next = _queueManager.currentTrack;
@@ -783,22 +791,52 @@ class BloomeeMusicPlayer extends BaseAudioHandler
   // bool guard is correct in Dart's single-threaded cooperative model:
   // no two microtasks can read this field simultaneously. The try/finally
   // guarantees it resets even on exception.
-  bool _checkingRelated = false;
+  Future<void>? _relatedCheckInFlight;
 
   Future<void> _checkRelatedSongs() async {
-    if (_checkingRelated) return;
-    _checkingRelated = true;
+    // The periodic recommendation fetch might still be running at EOF.
+    // Share that future so auto-next waits for its queue additions rather
+    // than seeing an empty queue and stopping abruptly.
+    final pending = _relatedCheckInFlight;
+    if (pending != null) {
+      await pending;
+      return;
+    }
+
+    final future = _fetchRelatedSongs();
+    _relatedCheckInFlight = future;
     try {
-      final track = _queueManager.currentTrack;
-      if (track == null) return;
-      await _relatedSongsManager.checkForRelatedSongs(
-        currentMedia: track,
-        queue: _queueManager.tracks,
-        currentPlayingIdx: _queueManager.currentIndex,
-        loopMode: loopMode.value,
-      );
+      await future;
+    } catch (e) {
+      log('Related-song lookup failed: $e', name: 'BloomeeMusicPlayer');
     } finally {
-      _checkingRelated = false;
+      if (identical(_relatedCheckInFlight, future)) {
+        _relatedCheckInFlight = null;
+      }
+    }
+  }
+
+  Future<void> _fetchRelatedSongs() async {
+    final track = _queueManager.currentTrack;
+    if (track == null) return;
+    await _relatedSongsManager.checkForRelatedSongs(
+      currentMedia: track,
+      queue: _queueManager.tracks,
+      currentPlayingIdx: _queueManager.currentIndex,
+      loopMode: loopMode.value,
+    );
+  }
+
+  /// Allow the installed plugin a short chance to extend a nearly exhausted
+  /// queue. Respect the user's auto-play preference and do not loop when
+  /// Repeat is off and the provider offers no further tracks.
+  Future<void> _waitForNextQueueTrack() async {
+    if (_queueManager.hasNext(loopMode: loopMode.value)) return;
+    try {
+      await _checkRelatedSongs().timeout(const Duration(seconds: 3));
+    } on TimeoutException {
+      log('Related-song lookup timed out at queue end.',
+          name: 'BloomeeMusicPlayer');
     }
   }
 
@@ -904,8 +942,10 @@ class BloomeeMusicPlayer extends BaseAudioHandler
   }
 
   Future<void> _internalSkipToNext() async {
+    if (_isAdvancing) return;
     _isAdvancing = true;
     try {
+      await _waitForNextQueueTrack();
       final advanced = _queueManager.advanceToNext(loopMode: loopMode.value);
       if (advanced) {
         final next = _queueManager.currentTrack;
