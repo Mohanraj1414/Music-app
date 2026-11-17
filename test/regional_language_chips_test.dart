@@ -17,13 +17,18 @@ void main() {
       ),
     );
 
-    for (final query in ['Tamil songs', 'English songs', 'Kannada songs']) {
+    for (final query in [
+      'Tamil songs',
+      'English songs',
+      'Kannada songs',
+      'Hindi songs',
+    ]) {
       final chip = find.byKey(ValueKey('search-' + query));
       expect(chip, findsOneWidget);
       await tester.tap(chip);
       await tester.pump();
     }
 
-    expect(searches, ['Tamil songs', 'English songs', 'Kannada songs']);
+    expect(searches, ['Tamil songs', 'English songs', 'Kannada songs', 'Hindi songs']);
   });
 }
