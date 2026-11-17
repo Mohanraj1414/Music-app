@@ -207,8 +207,9 @@ class _MiniPlayerCardState extends State<MiniPlayerCard>
                             },
                           ),
                         _PlayPauseButton(state: widget.state),
-                        if (isDesktop)
-                          _ControlButton(
+                        // Keep Next visible on phones: users should not need to
+                        // discover the swipe gesture to advance their queue.
+                        _ControlButton(
                             icon: FontAwesome.forward_step_solid,
                             size: 20,
                             onPressed: () {
@@ -219,7 +220,8 @@ class _MiniPlayerCardState extends State<MiniPlayerCard>
                                   .skipToNext();
                             },
                           ),
-                        _ControlButton(
+                        if (isDesktop)
+                          _ControlButton(
                           icon: FontAwesome.plus_solid,
                           size: 18,
                           onPressed: () {
