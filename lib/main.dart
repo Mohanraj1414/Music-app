@@ -54,7 +54,6 @@ import 'package:media_kit/media_kit.dart';
 import 'package:share_handler/share_handler.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'blocs/media_player/bloomee_player_cubit.dart';
-import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:Bloomee/services/discord_service.dart';
 import 'package:Bloomee/services/db/legacy/legacy_migration_service.dart'
     as legacy_migration;
@@ -137,12 +136,6 @@ Future<void> importItems(String path) async {
   }
 }
 
-Future<void> setHighRefreshRate() async {
-  if (io.Platform.isAndroid) {
-    await FlutterDisplayMode.setHighRefreshRate();
-  }
-}
-
 late BloomeePlayerCubit bloomeePlayerCubit;
 Future<void> setupPlayerCubit() async {
   await setupAudioSession();
@@ -155,7 +148,6 @@ Future<void> main() async {
   GestureBinding.instance.resamplingEnabled = true;
   MediaKit.ensureInitialized();
   await bootstrapApp();
-  setHighRefreshRate();
   await setupPlayerCubit();
   DiscordService.initialize();
   runApp(const MyApp());
