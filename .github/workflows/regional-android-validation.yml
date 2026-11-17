@@ -1,0 +1,69 @@
+name: Regional music app validation
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Strict Flutter checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.4'
+          channel: stable
+          cache: true
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Analyze modified music discovery and player files
+        run: |
+          flutter analyze --no-fatal-infos --no-fatal-warnings \
+            lib/screens/widgets/language_discovery_section.dart \
+            lib/screens/widgets/regional_language_chips.dart \
+            lib/screens/screen/explore_screen.dart \
+            lib/screens/screen/search_screen.dart \
+            lib/services/bloomee_player.dart \
+            lib/services/player/related_songs_manager.dart \
+            test/language_discovery_section_test.dart \
+            test/regional_language_chips_test.dart
+      - name: Run language navigation tests
+        run: |
+          flutter test test/language_discovery_section_test.dart
+          flutter test test/regional_language_chips_test.dart
+
+  android-apk:
+    name: Android debug APK
+    runs-on: ubuntu-latest
+    needs: test
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.4'
+          channel: stable
+          cache: true
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android
+      - name: Install dependencies
+        run: flutter pub get
+      - name: Build installable arm64 debug APK
+        run: flutter build apk --debug --target-platform android-arm64
+      - name: Upload tested Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: regional-music-android-arm64-debug
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
