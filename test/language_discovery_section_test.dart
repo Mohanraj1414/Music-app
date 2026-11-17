@@ -8,6 +8,7 @@ void main() {
     ('tamil', 'Tamil songs'),
     ('english', 'English songs'),
     ('kannada', 'Kannada songs'),
+    ('hindi', 'Hindi songs'),
   ]) {
     testWidgets('$id discovery card opens a language search', (tester) async {
       final router = GoRouter(
