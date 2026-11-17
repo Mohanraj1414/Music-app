@@ -41,12 +41,18 @@ jobs:
             lib/plugins/blocs/plugin/plugin_event.dart \
             lib/screens/screen/plugin_manager_screen.dart \
             lib/screens/widgets/music_plugin_hub_card.dart \
+            lib/services/player/recommendation_settings.dart \
+            lib/services/player/related_songs_manager.dart \
+            lib/screens/widgets/recommendation_mode_selector.dart \
+            lib/screens/screen/player_screen.dart \
+            test/recommendation_settings_test.dart \
             test/language_discovery_section_test.dart \
             test/regional_language_chips_test.dart
       - name: Run language navigation tests
         run: |
           flutter test test/language_discovery_section_test.dart
           flutter test test/regional_language_chips_test.dart
+          flutter test test/recommendation_settings_test.dart
 
   android-apk:
     name: Android debug APK

@@ -13,6 +13,11 @@ class SettingKeys {
   // ── Playback ────────────────────────────────────────────────────────────────
   static const String strmQuality = "streamQuality";
   static const String autoPlay = "autoPlaySimilarItems";
+  /// Recommendation controls and bounded recent-track history.
+  static const String radioMode = 'isaiflowRadioMode';
+  static const String radioMood = 'isaiflowRadioMood';
+  static const String radioLanguage = 'isaiflowRadioLanguage';
+  static const String radioRecentKeys = 'isaiflowRadioRecentKeys';
   static const String autoResolveUnavailableTracks =
       "autoResolveUnavailableTracks";
 

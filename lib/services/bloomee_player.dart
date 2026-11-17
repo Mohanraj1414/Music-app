@@ -18,6 +18,7 @@ import 'package:Bloomee/services/player/player_engine.dart';
 import 'package:Bloomee/services/player/player_error_handler.dart';
 import 'package:Bloomee/services/player/queue_manager.dart';
 import 'package:Bloomee/services/player/related_songs_manager.dart';
+import 'package:Bloomee/services/player/recommendation_settings.dart';
 import 'package:Bloomee/services/player/recently_played_tracker.dart';
 import 'package:Bloomee/services/plugin/plugin_service.dart';
 import 'package:Bloomee/services/meta_resolver/smart_track_replacement_service.dart';
@@ -76,6 +77,7 @@ class BloomeeMusicPlayer extends BaseAudioHandler
   CancelableOperation<ResolvedMediaSource>? _preResolveOp;
   CancelableOperation<(Track, ResolvedMediaSource)>? _currentResolveOp;
   bool _isAdvancing = false;
+  final Set<String> _autoSuggestedTrackIds = <String>{};
 
   // ── Preload identity ───────────────────────────────────────────────────────
   String? _preloadedTrackId;
@@ -107,6 +109,25 @@ class BloomeeMusicPlayer extends BaseAudioHandler
   BehaviorSubject<PlayerError?> get lastError => _errorHandler.lastError;
   BehaviorSubject<List<Track>> get relatedSongs =>
       _relatedSongsManager.relatedSongs;
+  ValueStream<RecommendationSettings> get recommendationSettings =>
+      _relatedSongsManager.settings;
+
+  /// Applies the selected radio/mood/language immediately. Manually queued
+  /// tracks stay intact; only future autoplay suggestions are replaced.
+  Future<void> setRecommendationSettings(
+      RecommendationSettings next) async {
+    if (_isDisposed) return;
+    await _relatedSongsManager.setPreferences(next);
+    final tracks = _queueManager.tracks;
+    for (int i = tracks.length - 1; i > _queueManager.currentIndex; i--) {
+      if (_autoSuggestedTrackIds.contains(tracks[i].id)) {
+        _queueManager.removeTrackAt(i);
+      }
+    }
+    _autoSuggestedTrackIds.clear();
+    _preResolveNextTrack();
+    unawaited(_checkRelatedSongs());
+  }
 
   @override
   BehaviorSubject<String> get queueTitle => _queueManager.queueTitle;
@@ -335,6 +356,7 @@ class BloomeeMusicPlayer extends BaseAudioHandler
 
     _relatedSongsManager.onAddQueueItems =
         (items, {bool atLast = false}) {
+      _autoSuggestedTrackIds.addAll(items.map((item) => item.id));
       addQueueTracks(items, atLast: atLast);
       // Related tracks are added *after* the current song started. Prepare
       // the newly available next track immediately for smoother transitions.
@@ -454,6 +476,7 @@ class BloomeeMusicPlayer extends BaseAudioHandler
 
   void _updateCurrentTrack(Track track) {
     _currentTrack = track;
+    _relatedSongsManager.recordPlayed(track);
     mediaItem.add(trackToMediaItem(track));
   }
 
@@ -1011,6 +1034,7 @@ class BloomeeMusicPlayer extends BaseAudioHandler
     _isAdvancing = true;
     try {
       fromPlaylist.add(true);
+      _autoSuggestedTrackIds.clear();
       _relatedSongsManager.clearRelatedSongs();
       _clearPreloadedMarker();
 
@@ -1066,6 +1090,8 @@ class BloomeeMusicPlayer extends BaseAudioHandler
 
   Future<void> updateQueueTracks(List<Track> tracks,
       {bool doPlay = false, int startIndex = 0}) async {
+    _autoSuggestedTrackIds.clear();
+    _relatedSongsManager.clearRelatedSongs();
     _queueManager.updateQueue(tracks, startIndex: startIndex);
     if (doPlay) {
       final t = _queueManager.currentTrack;
@@ -1091,6 +1117,8 @@ class BloomeeMusicPlayer extends BaseAudioHandler
       _queueManager.moveTrack(oldIndex, newIndex);
 
   void clearQueue() {
+    _autoSuggestedTrackIds.clear();
+    _relatedSongsManager.clearRelatedSongs();
     _clearPreloadedMarker();
     _queueManager.clearQueue();
   }
