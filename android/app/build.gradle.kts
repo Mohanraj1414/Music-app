@@ -104,57 +104,6 @@ flutter {
     source = "../.."
 }
 
-// Configure Jetifier to handle large transformations
-tasks.withType<JavaCompile> {
-    options.javaModuleSystemOptions {
-        addModules.add("jdk.incubator.vector")
-    }
-}
-
-// Optimize Jetifier transformation
-if (project.hasProperty("android")) {
-    android.applicationVariants.all { variant ->
-        variant.javaCompileProvider?.configure {
-            doFirst {
-                println("Compiling variant: ${variant.name}")
-            }
-        }
-    }
-}
-
-// Plugin compatibility diagnostics
-println("\n========== Plugin Compatibility Check ==========")
-configurations.all {
-    resolutionStrategy {
-        force("com.google.code.gson:gson:2.10.1")
-        
-        // Force specific versions for compatibility
-        eachDependency { dependency ->
-            when {
-                dependency.requested.group == "org.jetbrains.kotlin" -> {
-                    println("  ✅ Kotlin: ${dependency.requested.name}:${dependency.requested.version}")
-                }
-                dependency.requested.group == "androidx.appcompat" -> {
-                    println("  ✅ AndroidX AppCompat: ${dependency.requested.version}")
-                }
-                dependency.requested.group.contains("audio") -> {
-                    println("  🔊 Audio Plugin: ${dependency.requested.name}:${dependency.requested.version}")
-                }
-            }
-        }
-    }
-}
-println("===================================================\n")
-
-// Enhanced error handling for large builds
-gradle.taskGraph.whenReady { taskGraph ->
-    taskGraph.allTasks.forEach { task ->
-        when {
-            task.name.contains("transform", ignoreCase = true) -> {
-                task.doFirst {
-                    println("Starting transform: ${task.name}")
-                }
-            }
-        }
-    }
-}
+// Keep native build configuration minimal and compatible with Gradle's
+// Kotlin DSL. The legacy diagnostic tasks below this point used unsupported
+// APIs and prevented Android compilation altogether.
