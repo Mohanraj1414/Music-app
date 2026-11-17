@@ -88,7 +88,23 @@ class _SearchScreenState extends State<SearchScreen> {
 
     if (widget.searchQuery.isNotEmpty) {
       _textEditingController.text = widget.searchQuery;
-      _doSearch(widget.searchQuery);
+      if (_activePluginIdNotifier.value != null) {
+        _doSearch(widget.searchQuery);
+      }
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant SearchScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The shell keeps this tab alive; language cards can push a new query
+    // without recreating SearchScreen.
+    if (oldWidget.searchQuery != widget.searchQuery &&
+        widget.searchQuery.trim().isNotEmpty) {
+      _setSearchFieldText(widget.searchQuery);
+      if (_activePluginIdNotifier.value != null) {
+        _doSearch(widget.searchQuery);
+      }
     }
   }
 
@@ -210,6 +226,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
         _activePluginIdNotifier.value = activeId;
         _contentBloc.add(SetActiveContentPlugin(pluginId: activeId));
+        // An incoming language search may have been selected before the
+        // asynchronous plugin bootstrap finished.
+        final pendingQuery = _textEditingController.text.trim();
+        if (pendingQuery.isNotEmpty) {
+          _doSearch(pendingQuery);
+        }
       },
       child: GestureDetector(
         onTap: () {
